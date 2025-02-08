@@ -511,6 +511,9 @@ class Factory:
 
             extras = ireq.extras or list(cand.dist.iter_default_extras())
 
+            if MAGIC_EXPLICIT_EMPTY_EXTRAS in extras:
+                extras.remove(MAGIC_EXPLICIT_EMPTY_EXTRAS)
+
             if cand is None:
                 # There's no way we can satisfy a URL requirement if the underlying
                 # candidate fails to build. An unnamed URL must be user-supplied, so

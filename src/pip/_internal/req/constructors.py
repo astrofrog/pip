@@ -12,6 +12,7 @@ import copy
 import logging
 import os
 import re
+import uuid
 from dataclasses import dataclass
 from typing import Collection, Dict, List, Optional, Set, Tuple, Union
 
@@ -31,10 +32,13 @@ from pip._internal.utils.packaging import get_requirement
 from pip._internal.utils.urls import path_to_url
 from pip._internal.vcs import is_url, vcs
 
+MAGIC_EXPLICIT_EMPTY_EXTRAS = str(uuid.uuid4())
+
 __all__ = [
     "install_req_from_editable",
     "install_req_from_line",
     "parse_editable",
+    "MAGIC_EXPLICIT_EMPTY_EXTRAS"
 ]
 
 logger = logging.getLogger(__name__)
@@ -48,7 +52,11 @@ def _strip_extras(path: str) -> Tuple[str, Optional[str]]:
         path_no_extras = m.group(1)
         extras = m.group(2)
     else:
-        path_no_extras = path
+        if path.endswith('[]'):
+            extras = f'[{MAGIC_EXPLICIT_EMPTY_EXTRAS}]'
+            path_no_extras = path[:-2]
+        else:
+            path_no_extras = path
 
     return path_no_extras, extras
 

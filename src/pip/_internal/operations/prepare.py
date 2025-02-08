@@ -37,6 +37,7 @@ from pip._internal.network.lazy_wheel import (
 from pip._internal.network.session import PipSession
 from pip._internal.operations.build.build_tracker import BuildTracker
 from pip._internal.req.req_install import InstallRequirement
+from pip._internal.req.constructors import MAGIC_EXPLICIT_EMPTY_EXTRAS
 from pip._internal.utils._log import getLogger
 from pip._internal.utils.direct_url_helpers import (
     direct_url_for_editable,
@@ -649,8 +650,13 @@ class RequirementPreparer:
 
         # Setting up the default-extra if necessary
         default_extras = frozenset(dist.metadata.get_all("Default-Extra", []))
-        req.extras = req.extras or default_extras
-        req.req.extras = req.extras or default_extras
+
+        if MAGIC_EXPLICIT_EMPTY_EXTRAS in req.extras:
+            req.extras.remove(MAGIC_EXPLICIT_EMPTY_EXTRAS)
+        else:
+            req.extras = req.extras or default_extras
+
+        req.req.extras = req.extras
 
         return dist
 
