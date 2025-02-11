@@ -52,7 +52,7 @@ def _strip_extras(path: str) -> Tuple[str, Optional[str]]:
         path_no_extras = m.group(1)
         extras = m.group(2)
     else:
-        if path.endswith('[]'):
+        if '[]' in path:
             extras = f'[{MAGIC_EXPLICIT_EMPTY_EXTRAS}]'
             path_no_extras = path[:-2]
         else:
