@@ -656,6 +656,8 @@ class RequirementPreparer:
         else:
             req.extras = req.extras or default_extras
 
+        print('req.extras', req.extras)
+
         req.req.extras = req.extras
 
         return dist
