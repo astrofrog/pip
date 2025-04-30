@@ -514,6 +514,8 @@ class Factory:
             if MAGIC_EXPLICIT_EMPTY_EXTRAS in extras:
                 extras.remove(MAGIC_EXPLICIT_EMPTY_EXTRAS)
 
+            print('EXTRAS', extras)
+
             if cand is None:
                 # There's no way we can satisfy a URL requirement if the underlying
                 # candidate fails to build. An unnamed URL must be user-supplied, so
