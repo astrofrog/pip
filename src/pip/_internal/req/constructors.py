@@ -46,6 +46,7 @@ operators = Specifier._operators.keys()
 
 def _strip_extras(req: str) -> Tuple[str, Optional[str]]:
     # This regex matches the name and extras, leaving the rest (version, markers, etc)
+    print('IN _strip_extras', req)
     m = re.match(r"^([^\[\]]+)(\[[^\]]*\])?(.*)$", req)
     if m:
         name = m.group(1)
