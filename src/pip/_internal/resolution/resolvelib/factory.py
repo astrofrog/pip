@@ -509,6 +509,8 @@ class Factory:
                 version=None,
             )
 
+            print('cand', cand)
+
             extras = ireq.extras or list(cand.dist.iter_default_extras())
 
             if cand is None:
