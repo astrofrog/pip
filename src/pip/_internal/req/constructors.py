@@ -340,15 +340,16 @@ def parse_req_from_line(name: str, line_source: Optional[str]) -> RequirementPar
         markers = None
     name = name.strip()
     req_as_string = None
-    path = os.path.normpath(os.path.abspath(name))
     link = None
     extras_as_string = None
 
     if is_url(name):
         link = Link(name)
     else:
-        p, extras_as_string = _strip_extras(path)
-        url = _get_url_from_path(p, name)
+        # FIX: Strip extras from the original name before path normalization
+        p, extras_as_string = _strip_extras(name)
+        path = os.path.normpath(os.path.abspath(p))
+        url = _get_url_from_path(path, name)
         if url is not None:
             link = Link(url)
 
