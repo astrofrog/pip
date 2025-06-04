@@ -83,11 +83,19 @@ def _set_requirement_extras(req: Requirement, new_extras: Set[str]) -> Requireme
         match is not None
     ), f"regex match on requirement {req} failed, this should never happen"
     pre: Optional[str] = match.group(1)
+    orig_extras: Optional[str] = match.group(2)
     post: Optional[str] = match.group(3)
     assert (
         pre is not None and post is not None
     ), f"regex group selection for requirement {req} failed, this should never happen"
-    extras: str = "[{}]".format(",".join(sorted(new_extras)) if new_extras else "")
+
+    # Only add [] if new_extras is not empty, or if the original string had [], or if the sentinel is present
+    sentinel = "explicit-no-default-extras"
+    if new_extras or (orig_extras == "[]" or sentinel in new_extras):
+        extras = "[{}]".format(",".join(sorted(new_extras)))
+    else:
+        extras = ""
+
     return get_requirement(f"{pre}{extras}{post}")
 
 
