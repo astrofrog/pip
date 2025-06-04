@@ -130,7 +130,7 @@ class SpecifierWithoutExtrasRequirement(SpecifierRequirement):
         print('SpecifierWithoutExtrasRequirement.__init__')
         print(ireq.extras)
         self._ireq = install_req_drop_extras(ireq)
-        if EXPLICIT_EMPTY_EXTRAS in ireq.extras:
+        if ireq.extras:
             self._ired.extras = {EXPLICIT_EMPTY_EXTRAS}
         print(self._ireq.extras)
         self._equal_cache: Optional[str] = None
