@@ -529,6 +529,7 @@ def install_req_drop_extras(ireq: InstallRequirement) -> InstallRequirement:
     any extras. Sets the original requirement as the new one's parent
     (comes_from).
     """
+    print("install_req_drop_extras")
     return InstallRequirement(
         req=(
             _set_requirement_extras(ireq.req, set()) if ireq.req is not None else None

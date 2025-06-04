@@ -128,7 +128,9 @@ class SpecifierWithoutExtrasRequirement(SpecifierRequirement):
     def __init__(self, ireq: InstallRequirement) -> None:
         assert ireq.link is None, "This is a link, not a specifier"
         print('SpecifierWithoutExtrasRequirement.__init__')
+        print(ireq.extras)
         self._ireq = install_req_drop_extras(ireq)
+        print(self._ireq.extras)
         self._equal_cache: Optional[str] = None
         self._hash: Optional[int] = None
         self._extras = frozenset(canonicalize_name(e) for e in self._ireq.extras)
