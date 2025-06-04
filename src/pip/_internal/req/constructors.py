@@ -54,6 +54,7 @@ def _strip_extras(req: str) -> Tuple[str, Optional[str]]:
         rest = m.group(3)
         if extras == "[]":
             extras = f"[{EXPLICIT_EMPTY_EXTRAS}]"
+        print(f"{name}{rest}", extras)
         return f"{name}{rest}", extras
     else:
         return req, None
