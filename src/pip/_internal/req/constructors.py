@@ -369,9 +369,15 @@ def parse_req_from_line(name: str, line_source: Optional[str]) -> RequirementPar
 
     # a requirement specifier
     else:
-        # Reconstruct the requirement string with extras if present
+        # Insert extras after the name, before the version specifier/marker/url
         if extras_as_string:
-            req_as_string = f"{p}{extras_as_string}"
+            m = re.match(r"^([^\[\]=<>!~]+)(.*)$", p)
+            if m:
+                name_part = m.group(1)
+                rest = m.group(2)
+                req_as_string = f"{name_part}{extras_as_string}{rest}"
+            else:
+                req_as_string = f"{p}{extras_as_string}"
         else:
             req_as_string = p
 
