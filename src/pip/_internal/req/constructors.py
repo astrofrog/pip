@@ -369,7 +369,11 @@ def parse_req_from_line(name: str, line_source: Optional[str]) -> RequirementPar
 
     # a requirement specifier
     else:
-        req_as_string = name
+        # Reconstruct the requirement string with extras if present
+        if extras_as_string:
+            req_as_string = f"{p}{extras_as_string}"
+        else:
+            req_as_string = p
 
     extras = convert_extras(extras_as_string)
 
