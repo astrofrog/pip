@@ -44,20 +44,20 @@ logger = logging.getLogger(__name__)
 operators = Specifier._operators.keys()
 
 
-def _strip_extras(path: str) -> Tuple[str, Optional[str]]:
-    m = re.match(r"^(.+)(\[[^\]]+\])$", path)
-    extras = None
+def _strip_extras(req: str) -> Tuple[str, Optional[str]]:
+    # This regex matches the name and extras, leaving the rest (version, markers, etc)
+    print('IN _strip_extras', req)
+    m = re.match(r"^([^\[\]]+)(\[[^\]]*\])?(.*)$", req)
     if m:
-        path_no_extras = m.group(1)
+        name = m.group(1)
         extras = m.group(2)
+        rest = m.group(3)
+        if extras == "[]":
+            extras = f"[{EXPLICIT_EMPTY_EXTRAS}]"
+        print(f"{name}{rest}", extras)
+        return f"{name}{rest}", extras
     else:
-        if '[]' in path:
-            extras = f'[{EXPLICIT_EMPTY_EXTRAS}]'
-            path_no_extras = path.replace('[]', '')
-        else:
-            path_no_extras = path
-
-    return path_no_extras, extras
+        return req, None
 
 
 def convert_extras(extras: Optional[str]) -> Set[str]:
@@ -343,15 +343,16 @@ def parse_req_from_line(name: str, line_source: Optional[str]) -> RequirementPar
         markers = None
     name = name.strip()
     req_as_string = None
-    path = os.path.normpath(os.path.abspath(name))
     link = None
     extras_as_string = None
 
     if is_url(name):
         link = Link(name)
     else:
-        p, extras_as_string = _strip_extras(path)
-        url = _get_url_from_path(p, name)
+        # FIX: Strip extras from the original name before path normalization
+        p, extras_as_string = _strip_extras(name)
+        path = os.path.normpath(os.path.abspath(p))
+        url = _get_url_from_path(path, name)
         if url is not None:
             link = Link(url)
 
@@ -371,7 +372,17 @@ def parse_req_from_line(name: str, line_source: Optional[str]) -> RequirementPar
 
     # a requirement specifier
     else:
-        req_as_string = name
+        # Insert extras after the name, before the version specifier/marker/url
+        if extras_as_string:
+            m = re.match(r"^([^\[\]=<>!~]+)(.*)$", p)
+            if m:
+                name_part = m.group(1)
+                rest = m.group(2)
+                req_as_string = f"{name_part}{extras_as_string}{rest}"
+            else:
+                req_as_string = f"{p}{extras_as_string}"
+        else:
+            req_as_string = p
 
     extras = convert_extras(extras_as_string)
 
