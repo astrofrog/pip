@@ -486,6 +486,8 @@ class Factory:
         if ireq.comes_from is not None and hasattr(ireq.comes_from, "extra"):
             requested_extras = requested_extras or ireq.comes_from.extras
 
+        print("_make_requirements_from_install_req")
+
         if not ireq.match_markers(requested_extras):
             logger.info(
                 "Ignoring %s: markers '%s' don't match your environment",
