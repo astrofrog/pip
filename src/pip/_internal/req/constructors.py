@@ -44,20 +44,18 @@ logger = logging.getLogger(__name__)
 operators = Specifier._operators.keys()
 
 
-def _strip_extras(path: str) -> Tuple[str, Optional[str]]:
-    m = re.match(r"^(.+)(\[[^\]]+\])$", path)
-    extras = None
+def _strip_extras(req: str) -> Tuple[str, Optional[str]]:
+    # This regex matches the name and extras, leaving the rest (version, markers, etc)
+    m = re.match(r"^([^\[\]]+)(\[[^\]]*\])?(.*)$", req)
     if m:
-        path_no_extras = m.group(1)
+        name = m.group(1)
         extras = m.group(2)
+        rest = m.group(3)
+        if extras == "[]":
+            extras = f"[{EXPLICIT_EMPTY_EXTRAS}]"
+        return f"{name}{rest}", extras
     else:
-        if '[]' in path:
-            extras = f'[{EXPLICIT_EMPTY_EXTRAS}]'
-            path_no_extras = path.replace('[]', '')
-        else:
-            path_no_extras = path
-
-    return path_no_extras, extras
+        return req, None
 
 
 def convert_extras(extras: Optional[str]) -> Set[str]:
