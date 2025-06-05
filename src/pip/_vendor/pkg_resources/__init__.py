@@ -3071,7 +3071,9 @@ class Distribution:
         deps: list[Requirement] = []
         deps.extend(dm.get(None, ()))
 
-        extras = extras or self.default_extras_require
+        if hasattr(self, 'default_extras_require'):
+            extras = extras or self.default_extras_require
+
         for ext in extras:
             try:
                 deps.extend(dm[safe_extra(ext)])
