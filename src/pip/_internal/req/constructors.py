@@ -42,10 +42,13 @@ from pip._internal.utils.pylock import (
 from pip._internal.utils.urls import path_to_url
 from pip._internal.vcs import is_url, vcs
 
+EXPLICIT_EMPTY_EXTRAS = 'explicit-no-default-extras'
+
 __all__ = [
     "install_req_from_editable",
     "install_req_from_line",
     "parse_editable",
+    "EXPLICIT_EMPTY_EXTRAS"
 ]
 
 logger = logging.getLogger(__name__)
@@ -62,7 +65,11 @@ def _strip_extras(path: str) -> tuple[str, str | None]:
         path_no_extras = m.group(1).rstrip()
         extras = m.group(2)
     else:
-        path_no_extras = path
+        if '[]' in path:
+            extras = f'[{EXPLICIT_EMPTY_EXTRAS}]'
+            path_no_extras = path.replace('[]', '')
+        else:
+            path_no_extras = path
 
     return path_no_extras, extras
 
