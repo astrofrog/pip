@@ -37,6 +37,7 @@ from pip._internal.models.link import Link
 from pip._internal.models.wheel import Wheel
 from pip._internal.operations.prepare import RequirementPreparer
 from pip._internal.req.constructors import (
+    EXPLICIT_EMPTY_EXTRAS,
     install_req_drop_extras,
     install_req_from_link_and_ireq,
 )
@@ -304,7 +305,9 @@ class Factory:
             assert ireq.req, "Candidates found on index must be PEP 508"
             specifier &= ireq.req.specifier
             hashes &= ireq.hashes(trust_internet=False)
-            extras |= frozenset(ireq.extras)
+            # The PEP 771 "no default extras" marker is an internal signal,
+            # not a real extra — don't let it propagate to candidate identity.
+            extras |= frozenset(e for e in ireq.extras if e != EXPLICIT_EMPTY_EXTRAS)
 
         def _get_installed_candidate() -> Candidate | None:
             """Get the candidate for the currently-installed version."""

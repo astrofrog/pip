@@ -333,7 +333,11 @@ class LinkCandidate(_InstallRequirementBackedCandidate):
             version=version,
         )
 
-        template.extras = ireq.extras
+        # Propagate default extras populated by the preparer back to the
+        # template so subsequent uses of it see the same extras. The PEP 771
+        # "no default extras" marker is an internal resolver signal and must
+        # not leak into a real candidate identity.
+        template.extras = {e for e in ireq.extras if e != EXPLICIT_EMPTY_EXTRAS}
 
     def _prepare_distribution(self) -> BaseDistribution:
         preparer = self._factory.preparer
