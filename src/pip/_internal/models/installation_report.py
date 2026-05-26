@@ -4,6 +4,7 @@ from typing import Any
 from pip._vendor.packaging.markers import default_environment
 
 from pip import __version__
+from pip._internal.req.constructors import EXPLICIT_EMPTY_EXTRAS
 from pip._internal.req.req_install import InstallRequirement
 
 
@@ -37,7 +38,11 @@ class InstallationReport:
         }
         if ireq.user_supplied and ireq.extras:
             # For top level requirements, the list of requested extras, if any.
-            res["requested_extras"] = sorted(ireq.extras)
+            visible_extras = sorted(
+                e for e in ireq.extras if e != EXPLICIT_EMPTY_EXTRAS
+            )
+            if visible_extras:
+                res["requested_extras"] = visible_extras
         return res
 
     def to_dict(self) -> dict[str, Any]:
