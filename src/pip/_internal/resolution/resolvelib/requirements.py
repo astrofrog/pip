@@ -134,7 +134,11 @@ class SpecifierWithoutExtrasRequirement(SpecifierRequirement):
             self._ireq.extras = {EXPLICIT_EMPTY_EXTRAS}
         self._equal_cache: str | None = None
         self._hash: int | None = None
-        self._extras = frozenset(canonicalize_name(e) for e in self._ireq.extras)
+        # Keep _extras empty so this requirement keys into the same criterion
+        # as the bare base package, enabling trivial conflict detection.
+        # The EXPLICIT_EMPTY_EXTRAS marker remains on _ireq.extras for the
+        # PEP 771 "no default extras" signal consumed elsewhere.
+        self._extras = frozenset()
 
     @property
     def _equal(self) -> str:
