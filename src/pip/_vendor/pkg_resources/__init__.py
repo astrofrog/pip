@@ -3326,7 +3326,13 @@ class Distribution:
 
     @property
     def default_extras_require(self):
-        return self._parsed_pkg_info.get_all('Default-Extra') or []
+        # _parsed_pkg_info is only defined on DistInfoDistribution; for legacy
+        # egg-info distributions PEP 771 default extras are not expressible.
+        try:
+            pkg_info = self._parsed_pkg_info
+        except AttributeError:
+            return []
+        return pkg_info.get_all('Default-Extra') or []
 
 
 class EggInfoDistribution(Distribution):
