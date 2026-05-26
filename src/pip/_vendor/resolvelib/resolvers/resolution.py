@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import contextlib
 import itertools
 import operator
 from typing import TYPE_CHECKING, Generic
@@ -150,11 +149,7 @@ class Resolution(Generic[RT, CT, KT]):
         )
         if not criterion.candidates:
             raise RequirementsConflicted(criterion)
-        
-        with contextlib.suppress(AttributeError):
-            requirement._extras = requirement._ireq.extras
-
-        criteria[requirement.name] = criterion
+        criteria[identifier] = criterion
 
     def _remove_information_from_criteria(
         self, criteria: dict[KT, Criterion[RT, CT]], parents: Collection[KT]
